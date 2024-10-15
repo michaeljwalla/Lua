@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Lua",
+            "type": "shell",
+            "command": "lua",
+            "args": [
+                "C:\\Users\\micha\\Desktop\\VSCode\\Lua\\ObjectsTester\\main.lua" //"${file}"
+            ],
+            "group": {
+                "kind":"build",
+                "isDefault": true
+            }
+        }
+    ]
+}

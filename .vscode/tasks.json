@@ -6,7 +6,7 @@
             "type": "shell",
             "command": "lua",
             "args": [
-                "C:\\Users\\micha\\Desktop\\VSCode\\Lua\\ObjectsTester\\main.lua" //"${file}"
+                "${file}"
             ],
             "group": {
                 "kind":"build",

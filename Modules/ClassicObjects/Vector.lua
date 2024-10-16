@@ -13,6 +13,7 @@ local insert = table.insert
 local function index(r,b)
     return r[b]
 end
+local quickSort = require("Modules.Sorts.QuickSort")
 --Vector constructor
 Vector.new = function(...)
     return setmetatable({...}, VectorNSM)
@@ -243,35 +244,39 @@ VectorNSM.retainAll = function(self, itemArr)                                   
     return changed
 end
 
-VectorNSM.set = function(self)
-
+VectorNSM.set = function(self, index, item)                                         --<any> replaces item at index, returns old                                     --<
+    local old = self[index] --will error from metamethod if invalid
+    rawset(self, index, item)
+    return old
 end
 
-VectorNSM.setElementAt = function(self)
-
+VectorNSM.setElementAt = function(self, item, index)                                --<nil> replaces item at index... again?
+    assert(self[index] ~= nil) --will error from metamethod anyways. 
+    self:add(index, item)
 end
 
-VectorNSM.setSize = function(self)
-
+VectorNSM.setSize = function(self)                                                  --<nil> lua has no size constraints
+    --nothing
+    return
 end
 
-VectorNSM.size = function(self)
+VectorNSM.size = function(self)                                                     --<int> returns the num. items present
     return #self
 end
 
-VectorNSM.sort = function(self)
-
+VectorNSM.subList = function(self, startIndex, endIndex)                            --<Vector> returns the subset of items in [startIndex, endIndex)
+    local subList = Vector.new()
+    for i = startIndex, endIndex - 1 do
+        sublist:add(i, self[i]) 
+    end
+    return subList
 end
 
-VectorNSM.subList = function(self)
-
+VectorNSM.toArray = function(self)                                                  --<table> returns copy of self as array
+    return {unpack(self)}
 end
 
-VectorNSM.toArray = function(self)
-
-end
-
-VectorNSM.toString = function(self)
+VectorNSM.toString = function(self)                                                 --<string> stringify the data!
     local str = name.." ["
     for i,v in pairs(self) do
         str = str..tostring(v)..", "
@@ -279,7 +284,7 @@ VectorNSM.toString = function(self)
     return str:sub(1,-3).."]"
 end
 
-VectorNSM.trimToSize = function(self)                   --<nil> relieve of the empty spaces in the list
+VectorNSM.trimToSize = function(self)                                               --<nil> relieve of the empty spaces in the list
     local len = #self
     if len == 0 then return end
 

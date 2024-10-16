@@ -33,25 +33,37 @@ LinkedList.isLinkedList = function(inpt)
     local pass, ans = pcall(index, inpt, "__type")
     return pass and ans == "LinkedList"
 end
+LinkedList.isCyclic = function(self)                                        --to check if the linked list is cyclic (reduced built-in funcs)
+    local cur = self.head
+    local nodeTbl = {}
+    while cur do
+        if nodeTbl[cur] then return true end
+        nodeTbl[cur] = true
+        cur = cur.next
+    end
+    return false
+end
 
 
 --LinkedList nonstatic methods
 LinkedListNSM.toString = function(self)
+    if LinkedList.isCyclic(self) then return "[Cyclic LinkedList]" end
     local str = name.." ["
 
-    local cur = self.head
-    local antiCyclic = {}
-    while cur do
-        if antiCyclic[cur] then
-            return str.."Cyclic ListNode]"
-        end
-        str = str..tostring(cur)..", "
-        cur = cur.next
-    end --concatenation
+    self:forEach(function(cur)
+        str = str..tostring(cur.data)..", "
+    end)
     return str:sub(1,-3).."]" --clip off extra comma
 end
 
-LinkedList.add = function()
+LinkedListNSM.forEach = function(self, callback)
+    assert( not LinkedList.isCyclic(self), "LinkedList is cyclic")
+    local cur = self.head
+    while cur do
+        callback(cur)
+        cur = cur.next
+    end
+end
 
 LinkedListNSM.__eq = nil
 LinkedListNSM.__lt = nil
@@ -63,7 +75,7 @@ LinkedListNSM.__type = name --not a real mt value but ig if u wanna typecheck do
 LinkedListNSM.__tostring = LinkedListNSM.toString or function() return name end
 
 LinkedListNSM.__index = function(self, index)
-    return assert(LinkedListAttributesR[index], "Missing attribute/method of "..name..": "..tostring(index))
+    return assert(type(LinkedListNSM[index]) == 'function' or LinkedListAttributesR[index], "Missing attribute/method of "..name..": "..tostring(index))
     and rawget(LinkedListNSM, index)
 end
 LinkedListNSM.__newindex = function(self, index, value)

@@ -54,7 +54,7 @@ ListNodeNSM.__tostring = ListNodeNSM.toString or function() return name end
 --jst to ensure toString exists
 
 ListNodeNSM.__index = function(self, index)
-    return assert(ListNodeAttributesR[index], "Missing attribute/method of "..name..": "..tostring(index))
+    return assert(type(ListNodeNSM[index]) == 'function' or ListNodeAttributesR[index], "Missing attribute/method of "..name..": "..tostring(index))
     and rawget(ListNodeNSM, index)
 end
 ListNodeNSM.__newindex = function(self, index, value)

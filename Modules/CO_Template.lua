@@ -35,7 +35,7 @@ objNameNSM.__type = name --not a real mt value but ig if u wanna typecheck do ob
 objNameNSM.__tostring = objNameNSM.toString or function() return name end
 
 objNameNSM.__index = function(self, index)
-    return assert(objNameAttributesR[index], "Missing attribute/method of "..name..": "..tostring(index))
+    return assert(type(objNameNSM[index]) == 'function' or objNameAttributesR[index], "Missing attribute/method of "..name..": "..tostring(index))
     and rawget(objNameNSM, index)
 end
 objNameNSM.__newindex = function(self, index, value)

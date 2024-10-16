@@ -126,7 +126,7 @@ VectorNSM.equals = function(self, vec)                                          
 end
 
 VectorNSM.firstElement = function(self)                                             --<any> returns the vector's first elem
-    return self[i]
+    return rawget(self, 1)
 end
 
 VectorNSM.forEach = function(self, callback)                                        --<nil> performs callback() for each pair
@@ -136,64 +136,111 @@ end
 
 VectorNSM.get = index                                                               --<any> self explanatory
 
-VectorNSM.hashCode = function(self)
-    
+VectorNSM.hashCode = function(self)                                                 --<int> only generally attainable through a c closure.
+    return 0x0
 end
 
-VectorNSM.indexOf = function(self)
-
+VectorNSM.indexOf = function(self, elem)                                            --<int> index of elem, or -1 if not present
+    for i,v in pairs(self) do
+        if v == elem then return i end --:( i shouldve done Object...
+    end
+    return -1
 end
 
-VectorNSM.insertElementAt = function(self)
-
+VectorNSM.insertElementAt = function(self, elem, index)                             --<void>lua has no size constraints
+    self:add(index, elem)
+    return
 end
 
-VectorNSM.isEmpty = function(self)
-
+VectorNSM.isEmpty = function(self)                                                  --<bool> checks if list has no entries
+    return #self == 0
 end
 
-VectorNSM.lastElement = function(self)
-
+VectorNSM.lastElement = function(self)                                              --<elem> returns last elem in list
+    return rawget(self, #self)
 end
 
-VectorNSM.lastIndexOf = function(self)
-
+VectorNSM.lastIndexOf = function(self, elem)                                        --<int> returns last occurrence of elem
+    for i = #self, 1, -1 do
+        if self[i] == elem then return i end --we live and we learn ;(
+    end
+    return -1
 end
 
-VectorNSM.listIterator = function(self)
+VectorNSM.listIterator = VectorNSM.enumerator                                       --<enumerator, vector> lua is a simple language
 
+VectorNSM.remove = function(self, index, isObject)                                  --<any?> removes and returns elem at index
+    local x;
+    if isObject then
+        index = self:indexOf(index)
+        if index == -1 then return end
+    else
+        x = self[index]
+    end
+    for i = index, #self do
+        rawset(self, i, rawget(self, i+1)) --shift left once
+    end
+    return x --x : any? since it doesnt return objects on :remove(Obj) only :remove(index)
 end
 
-VectorNSM.remove = function(self)
-
+VectorNSM.removeAll = function(self, itemArr)                                       --<bool> removes any instances of item in itemArr. returns true if anything changed
+    local items = {}
+    for i,v in next, itemArr do items[v] = true end --convert to hash set bc lookup is quicker
+    local shift = false
+    for i,v in pairs(self) do
+        if items[v] then rawset(self, i, nil) end
+    end
+    self:trimtoSize()
+    return shift
 end
 
-VectorNSM.removeAll = function(self)
+VectorNSM.removeAllElements = VectorNSM.clear                                       --<nil>lua has no size constraints
 
+VectorNSM.removeElement = function(self, elem)                                      --<bool> removes element, if present. t/f if changed
+    return self:remove(elem, true) ~= nil
+end
+VectorNSM.removeElementAt = function(self, index)                                   --<nil> removes element at index
+    self:remove(index)
+    return
 end
 
-VectorNSM.removeAllElements = function(self)
-
+VectorNSM.removeIf = function(self, callback)                                       --<bool> removes items satisfying callback(). t/f if changed
+    local changed = false
+    self:forEach(function(value, index, self)
+        if callback(value, index, self) then
+            rawset(self, index, nil)
+            changed = true
+        end
+    end)
+    self:trimToSize()
+    return changed
 end
 
-VectorNSM.removeElement = function(self)
-
+VectorNSM.removeRange = function(self, startIndex, endIndex)                        --<nil> removes range [start, end) from list
+    for i = startIndex, endIndex-1 do
+        rawset(self, i, nil)
+    end
+    self:trimToSize()
+    return
 end
 
-VectorNSM.removeIf = function(self)
-
+VectorNSM.replaceAll = function(self, callback)                                     --<nil> performs callback() on each item
+    self:forEach(function(value, index, self)
+        rawset(self, index, callback(value, index, self))
+    end)
+    return
 end
 
-VectorNSM.removeRange = function(self)
+VectorNSM.retainAll = function(self, itemArr)                                       --<bool> retains only items present in itemArr. t/f if changed
+    local items = {}
+    for i,v in next, itemArr do items[v] = true end
 
-end
-
-VectorNSM.replaceAll = function(self)
-
-end
-
-VectorNSM.retainAll = function(self)
-
+    local changed = false
+    for i,v in pairs(self) do
+        if not items[v] then rawset(self, i, nil) end
+    end
+    self:trimToSize()
+    return changed
 end
 
 VectorNSM.set = function(self)
@@ -226,14 +273,25 @@ end
 
 VectorNSM.toString = function(self)
     local str = name.." ["
-    for i,v in next, self do
+    for i,v in pairs(self) do
         str = str..tostring(v)..", "
     end
     return str:sub(1,-3).."]"
 end
 
-VectorNSM.trimToSize = function(self)
+VectorNSM.trimToSize = function(self)                   --<nil> relieve of the empty spaces in the list
+    local len = #self
+    if len == 0 then return end
 
+    local i = 1
+    for j,v in pairs(self) do   --next() skips nil entries rather than following linearly.
+        if i ~= j then          --so i will 'lag' behind if the index jumps, indicating a hole
+            rawset(self, i, v)  --fill the hole by swapping
+            rawset(self, j, nil)
+        end
+        i = i + 1
+    end
+    return
 end
 
 

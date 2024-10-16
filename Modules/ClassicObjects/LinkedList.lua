@@ -4,7 +4,9 @@ local name = "LinkedList"
 local LinkedList = {}
 local LinkedListNSM = {} --nonstatic object methods.
 
-local LinkedListAttributesRW = {}
+local LinkedListAttributesRW = {
+    head = true
+}
 local LinkedListAttributesR = setmetatable({
     __type = true
 }, {__index = LinkedListAttributesRW})
@@ -17,11 +19,14 @@ end
 LinkedList.new = function(...)
     local addData = {...}
 
-    local head = ListNode.wrap(addData[1])
-    local cur = head
-    for i = 2, #addData do
-        cur.next = ListNode.wrap(addData[i])
-        cur = cur.next
+    local head = nil
+    if #addData > 0 then
+        head = ListNode.wrap(addData[1])
+        local cur = head
+        for i = 2, #addData do
+            cur.next = ListNode.wrap(addData[i])
+            cur = cur.next
+        end
     end
     return setmetatable({
         head = head
@@ -48,8 +53,8 @@ end
 --LinkedList nonstatic methods
 LinkedListNSM.toString = function(self)
     if LinkedList.isCyclic(self) then return "[Cyclic LinkedList]" end
+    if not self.head then return "LinkedList []" end
     local str = name.." ["
-
     self:forEach(function(cur)
         str = str..tostring(cur.data)..", "
     end)
@@ -70,6 +75,21 @@ LinkedListNSM.getTail = function(self)
         if not cur.next then tail = cur end
     end)
     return tail
+end
+LinkedListNSM.push = function(self, ...)
+    local values = {...}
+    local tail = self:getTail()
+    local i = 1
+    if not tail then
+        self.head = ListNode.wrap(values[1])
+        tail = self.head
+        i = 2
+    end
+    for i = i, #values do
+        tail.next = ListNode.wrap(values[i])
+        tail = tail.next
+    end
+    return self
 end
 LinkedListNSM.__eq = nil
 LinkedListNSM.__lt = nil

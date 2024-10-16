@@ -64,7 +64,13 @@ LinkedListNSM.forEach = function(self, callback)
         cur = cur.next
     end
 end
-
+LinkedListNSM.getTail = function(self)
+    local tail = nil
+    self:forEach(function(cur)
+        if not cur.next then tail = cur end
+    end)
+    return tail
+end
 LinkedListNSM.__eq = nil
 LinkedListNSM.__lt = nil
 LinkedListNSM.__le = nil

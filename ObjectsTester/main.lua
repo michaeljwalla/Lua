@@ -95,6 +95,6 @@ end
 do
     print("Linked List Test")
     local x = LinkedList.new(1,2,3)
-    print(x)
+    print(x:getTail())
 
 end

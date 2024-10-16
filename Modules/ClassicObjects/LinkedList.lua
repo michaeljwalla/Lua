@@ -117,7 +117,7 @@ LinkedListNSM.pop = function(self, ...)
     return
 end
 LinkedListNSM.at = function(self, index)
-    local len = self:getLength()
+    local len = self:getLength() --i know it isnt efficient
     if index < 0 then index = len+1 + index end
     assert(index > 0 and index <= len, "Index out of bounds error") --protects from empty list and out-of-bounds
     local cur = self.head

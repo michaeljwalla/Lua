@@ -78,9 +78,9 @@ LinkedListNSM.getTail = function(self)
 end
 LinkedListNSM.push = function(self, ...)
     local values = {...}
-    local tail = self:getTail()
+    local tail = self.head and self:getTail()
     local i = 1
-    if not tail then
+    if not tail then                    --is empty
         self.head = ListNode.wrap(values[1])
         tail = self.head
         i = 2
@@ -90,6 +90,26 @@ LinkedListNSM.push = function(self, ...)
         tail = tail.next
     end
     return self
+end
+LinkedListNSM.pop = function(self, ...)
+    if not self.head then return nil end
+    assert( not LinkedList.isCyclic(self), "LinkedList is cyclic")
+
+    local cur, next = self.head, nil
+    if not cur.next then --if LL is length 1
+        rawset(self, "head", nil)
+        return cur
+    end
+
+    while cur do
+        next = cur.next
+        if not next.next then
+            rawset(cur, "next", nil) --remove last
+            return next
+        end
+        cur = next
+    end
+    return
 end
 LinkedListNSM.__eq = nil
 LinkedListNSM.__lt = nil

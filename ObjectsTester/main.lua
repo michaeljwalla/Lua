@@ -96,5 +96,5 @@ do
     print("Linked List Test")
     local x = LinkedList.new(1,2,3)
     x:push(4, 5, 6)
-    print(x)
+    print(x:pop(), x)
 end

@@ -1,4 +1,4 @@
-local defaults = {"Array"}
+local defaults = {"Array", "LinkedList", "ListNode"}
 
 
 local module = {}

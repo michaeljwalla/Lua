@@ -76,6 +76,11 @@ LinkedListNSM.getTail = function(self)
     end)
     return tail
 end
+LinkedListNSM.getLength = function(self)
+    local i = 0
+    self:forEach(function() i = i + 1 end)
+    return i
+end
 LinkedListNSM.push = function(self, ...)
     local values = {...}
     local tail = self.head and self:getTail()
@@ -89,7 +94,7 @@ LinkedListNSM.push = function(self, ...)
         tail.next = ListNode.wrap(values[i])
         tail = tail.next
     end
-    return self
+    return self:getLength()
 end
 LinkedListNSM.pop = function(self, ...)
     if not self.head then return nil end
@@ -111,11 +116,22 @@ LinkedListNSM.pop = function(self, ...)
     end
     return
 end
+LinkedListNSM.at = function(self, index)
+    local len = self:getLength()
+    if index < 0 then index = len+1 + index end
+    assert(index > 0 and index <= len, "Index out of bounds error") --protects from empty list and out-of-bounds
+    local cur = self.head
+    local i = 1
+    while i < index do
+        i = i + 1
+        cur = cur.next
+    end
+    return cur
+end
 LinkedListNSM.__eq = nil
 LinkedListNSM.__lt = nil
 LinkedListNSM.__le = nil
 LinkedListNSM.compareTo = nil
-
 --lock metatable
 LinkedListNSM.__type = name --not a real mt value but ig if u wanna typecheck do obj.__type == "xyz"
 LinkedListNSM.__tostring = LinkedListNSM.toString or function() return name end

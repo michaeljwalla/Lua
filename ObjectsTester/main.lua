@@ -2,12 +2,11 @@
 local module = require"Modules.ClassicObjectInit"
 module.import()
 
-
+local function test(msg, inpt)
+    print("\t"..tostring(msg)..": "..tostring(inpt))
+end
 do
     local x,y,z;
-    local function test(msg, inpt)
-        print("\t"..tostring(msg)..": "..tostring(inpt))
-    end
     local function reset()
         x = Array.new(1,2,3,4,5)
         y = Array.from{6,7,8,9,10}
@@ -93,8 +92,15 @@ end
 
 --linkedlist
 do
+    local x;
+    local function reset()
+        x = LinkedList.new(1,2,3)
+    end
     print("Linked List Test")
-    local x = LinkedList.new(1,2,3)
-    x:push(4, 5, 6)
-    print(x:pop(), x)
+    reset()
+    test("LinkedList.new(1,2,3)", x)
+    test("x.pop()", x:pop())
+    test("x.push(3, 4) -> 4", x:push(3, 4))
+    test("x.at(-1) -> 4", x:at(-1))
+    
 end

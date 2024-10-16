@@ -4,33 +4,44 @@ local name = "objName"
 local objName = {}
 local objNameNSM = {} --nonstatic object methods.
 
---objName variables
-
+local objNameAttributesRW = {}
+local objNameAttributesR = setmetatable({
+    __type = true
+}, {__index = objNameAttributesRW})
+--objName references/vars/internal methods
+local function index(r,b)
+    return r[b]
+end
 --objName constructor
 objName.new = nil
 
 --objName static methods
-objName.XYZ = nil
+objName.isobjName = function(inpt)
+    local pass, ans = pcall(index, inpt, "__type")
+    return pass and ans == "objName"
+end
+
 
 --objName nonstatic methods
-objNameNSM.XYZ = nil
+objNameNSM.toString = nil
+
 objNameNSM.__eq = nil
 objNameNSM.__lt = nil
 objNameNSM.__le = nil
-objNameNSM.__tostring = nil
 objNameNSM.compareTo = nil
 
 --lock metatable
 objNameNSM.__type = name --not a real mt value but ig if u wanna typecheck do obj.__type == "xyz"
-objNameNSM.__tostring = objNameNSM.__tostring or function() return name end
-objNameNSM.toString = objNameNSM.__tostring
---jst to ensure toString exists
+objNameNSM.__tostring = objNameNSM.toString or function() return name end
 
 objNameNSM.__index = function(self, index)
-    return rawget(objNameNSM, index) or error("Missing attribute/method of "..name..": "..tostring(index))
+    return assert(type(objNameNSM[index]) == 'function' or objNameAttributesR[index], "Missing attribute/method of "..name..": "..tostring(index))
+    and rawget(objNameNSM, index)
 end
 objNameNSM.__newindex = function(self, index, value)
-    error("Attempt to assign value to "..name.." object")
+    assert(objNameAttributesRW[index], "Attempt to assign value to "..name.." object")
+    rawset(self, index, value)
+    return
 end
 --
 return objName

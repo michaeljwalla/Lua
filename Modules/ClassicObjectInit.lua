@@ -1,4 +1,4 @@
-local defaults = {"Array", "LinkedList", "ListNode"}
+local defaults = {"Array", "LinkedList", "ListNode", "Vector"}
 
 
 if (_ENV) then --getfenv doesn't exist?

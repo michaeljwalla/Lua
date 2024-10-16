@@ -102,5 +102,16 @@ do
     test("x.pop()", x:pop())
     test("x.push(3, 4) -> 4", x:push(3, 4))
     test("x.at(-1) -> 4", x:at(-1))
-    
+    reset()
+end
+
+do
+    local x;
+    local function reset()
+        x = Vector.new(1,2,3)
+    end
+    reset()
+    print("Vector")
+    test("x -> Vector [1, 2, 3]", x)
+    test("x.add(4) && x.add(1,0) -> Vector[0, 1, 2, 3, 4]", x:add(4) and x:add(1,0) and x)
 end

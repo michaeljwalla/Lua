@@ -9,11 +9,17 @@ local VectorAttributesR = setmetatable({
     __type = true
 }, {__index = VectorAttributesRW})
 --Vector references/vars/internal methods
+local insert = table.insert
 local function index(r,b)
     return r[b]
 end
 --Vector constructor
-Vector.new = nil
+Vector.new = function(...)
+    return setmetatable({...}, VectorNSM)
+end
+Vector.from = function(arr)
+    return setmetatable({unpack(arr)}, VectorNSM)
+end
 
 --Vector static methods
 Vector.isVector = function(inpt)
